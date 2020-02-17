@@ -1,0 +1,27 @@
+{
+    "name": "linna/auth-mapper-test-trait",
+    "description": "Tests for auth-mapper implementations.",
+    "keywords": [
+        "php",
+        "mapper",
+        "mysql",
+        "authentication",
+        "authorization"
+    ],
+    "homepage": "https://github.com/linna",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastian Rapetti",
+            "email": "sebastian.rapetti@tim.it"
+        }
+    ],
+    "require": {
+        "php": "^7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Linna\\Tests\\":  ["tests/Authentication", "tests/Authorization"]
+        }
+    }
+}
