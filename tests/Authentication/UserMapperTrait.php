@@ -16,7 +16,7 @@ use Linna\Authentication\User;
 use Linna\Authentication\UserMapper;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
-
+use Linna\DataMapper\UUID4;
 //use Linna\Storage\StorageFactory;
 //use PDO;
 //use PHPUnit\Framework\TestCase;
@@ -190,6 +190,7 @@ trait UserMapperTrait
     public function testConcreteInsert(): void
     {
         $user = self::$userMapper->create();
+        $user->uuid = (new UUID4())->getHex();
         $user->name = 'test_user';
         $user->setPassword('test_password');
 
