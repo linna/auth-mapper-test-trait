@@ -244,7 +244,7 @@ trait EnhancedAuthenticationMapperTrait
         $loginAttempt->userName = 'test';
         $loginAttempt->sessionId = 'vaqgvpochtzf8gh888q6vnlch5';
         $loginAttempt->ipAddress = '127.0.0.1';
-        
+
         //not so good but works
         $loginAttempt->when = \date(self::$date_format, \time());
 
