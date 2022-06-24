@@ -9,10 +9,10 @@
  */
 declare(strict_types=1);
 
-namespace Linna\Tests;
+namespace Linna\Authentication;
 
-use Linna\Authentication\EnhancedAuthenticationMapper;
-use Linna\Authentication\LoginAttempt;
+//use Linna\Authentication\EnhancedAuthenticationMapper;
+//use Linna\Authentication\LoginAttempt;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 

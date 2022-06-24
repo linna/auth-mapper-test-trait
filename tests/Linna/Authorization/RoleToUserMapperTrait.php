@@ -9,16 +9,16 @@
  */
 declare(strict_types=1);
 
-namespace Linna\Tests;
+namespace Linna\Authorization;
 
 //use Linna\Authentication\Password;
-use Linna\Authorization\EnhancedUser;
-use Linna\Authorization\EnhancedUserMapper;
+//use Linna\Authorization\EnhancedUser;
+//use Linna\Authorization\EnhancedUserMapper;
 //use Linna\Authorization\Permission;
-use Linna\Authorization\PermissionMapper;
-use Linna\Authorization\Role;
-use Linna\Authorization\RoleMapper;
-use Linna\Authorization\RoleToUserMapper;
+//use Linna\Authorization\PermissionMapper;
+//use Linna\Authorization\Role;
+//use Linna\Authorization\RoleMapper;
+//use Linna\Authorization\RoleToUserMapper;
 //use Linna\Authentication\UserMapper;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;

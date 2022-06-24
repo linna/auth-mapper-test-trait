@@ -9,11 +9,11 @@
  */
 declare(strict_types=1);
 
-namespace Linna\Tests;
+namespace Linna\Authentication;
 
 //use Linna\Authentication\Password;
-use Linna\Authentication\User;
-use Linna\Authentication\UserMapper;
+//use Linna\Authentication\User;
+//use Linna\Authentication\UserMapper;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 use Linna\DataMapper\UUID4;
