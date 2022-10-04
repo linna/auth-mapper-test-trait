@@ -11,28 +11,18 @@ declare(strict_types=1);
 
 namespace Linna\Authentication;
 
-//use Linna\Authentication\EnhancedAuthenticationMapper;
-//use Linna\Authentication\LoginAttempt;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
-
-//use Linna\Storage\StorageFactory;
-//use PDO;
-//use PHPUnit\Framework\TestCase;
 
 /**
  * Enhanced Authentication Mapper Test.
  */
 trait EnhancedAuthenticationMapperTrait
 {
-    /**
-     * @var EnhancedAuthenticationMapper The enhanced authentication mapper class.
-     */
+    /** @var EnhancedAuthenticationMapper The enhanced authentication mapper class. */
     protected static EnhancedAuthenticationMapper $enhancedAuthenticationMapper;
 
-    /**
-     * @var ExtendedPDO Database connection.
-     */
+    /** @var ExtendedPDO Database connection. */
     protected static ExtendedPDO $pdo;
 
     /**

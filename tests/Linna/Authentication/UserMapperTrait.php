@@ -11,30 +11,19 @@ declare(strict_types=1);
 
 namespace Linna\Authentication;
 
-//use Linna\Authentication\Password;
-//use Linna\Authentication\User;
-//use Linna\Authentication\UserMapper;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 use Linna\DataMapper\UUID4;
-
-//use Linna\Storage\StorageFactory;
-//use PDO;
-//use PHPUnit\Framework\TestCase;
 
 /**
  * User Mapper trait.
  */
 trait UserMapperTrait
 {
-    /**
-     * @var UserMapper The enhanced authentication mapper class.
-     */
+    /** @var UserMapper The enhanced authentication mapper class. */
     protected static UserMapper $userMapper;
 
-    /**
-     * @var ExtendedPDO Database connection.
-     */
+    /** @var ExtendedPDO Database connection. */
     protected static ExtendedPDO $pdo;
 
     /**

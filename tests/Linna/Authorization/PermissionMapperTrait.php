@@ -11,46 +11,24 @@ declare(strict_types=1);
 
 namespace Linna\Authorization;
 
-//use Linna\Authentication\Password;
-//use Linna\Authentication\User;
-//use Linna\Authentication\UserMapper;
-//use Linna\Authorization\EnhancedUser;
-//use Linna\Authorization\EnhancedUserMapper;
-//use Linna\Authorization\Permission;
-//use Linna\Authorization\PermissionMapper;
-//use Linna\Authorization\Role;
-//use Linna\Authorization\RoleMapper;
-//use Linna\Authorization\RoleToUserMapper;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
-
-//use Linna\Storage\StorageFactory;
-//use PDO;
-//use PHPUnit\Framework\TestCase;
 
 /**
  * Permission Mapper Trait.
  */
 trait PermissionMapperTrait
 {
-    /**
-     * @var EnhancedUserMapper The enhanced user mapper class.
-     */
+    /** @var EnhancedUserMapper The enhanced user mapper class. */
     protected static EnhancedUserMapper $enhancedUserMapper;
 
-    /**
-     * @var PermissionMapper The permission mapper class.
-     */
+    /** @var PermissionMapper The permission mapper class. */
     protected static PermissionMapper $permissionMapper;
 
-    /**
-     * @var RoleMapper The role mapper class.
-     */
+    /** @var RoleMapper The role mapper class. */
     protected static RoleMapper $roleMapper;
 
-    /**
-     * @var ExtendedPDO Database connection.
-     */
+    /** @var ExtendedPDO Database connection. */
     protected static ExtendedPDO $pdo;
 
     /**
