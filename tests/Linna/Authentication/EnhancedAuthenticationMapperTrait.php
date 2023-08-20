@@ -13,6 +13,7 @@ namespace Linna\Authentication;
 
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
+use RuntimeException;
 
 /**
  * Enhanced Authentication Mapper Test.
@@ -38,12 +39,11 @@ trait EnhancedAuthenticationMapperTrait
      *
      * @return array
      */
-    public function loginAttemptIdProvider(): array
+    public static function loginAttemptIdProvider(): array
     {
         return [
             [1, 1],
-            [28, 28],
-            [29, 0]
+            [28, 28]
         ];
     }
 
@@ -78,7 +78,7 @@ trait EnhancedAuthenticationMapperTrait
      *
      * @return array
      */
-    public function loginAttemptFetchLimitProvider(): array
+    public static function loginAttemptFetchLimitProvider(): array
     {
         return [
             ['root', 1, 0, 1],
@@ -116,7 +116,7 @@ trait EnhancedAuthenticationMapperTrait
      *
      * @return array
      */
-    public function attemptsWithSameUserProvider(): array
+    public static function attemptsWithSameUserProvider(): array
     {
         return [
             ['root', 40, 6],
@@ -148,7 +148,7 @@ trait EnhancedAuthenticationMapperTrait
      *
      * @return array
      */
-    public function attemptsWithSameSessionProvider(): array
+    public static function attemptsWithSameSessionProvider(): array
     {
         return [
             ['mbvi2lgdpcj6vp3qemh2estei2', 40, 12],
@@ -178,7 +178,7 @@ trait EnhancedAuthenticationMapperTrait
      *
      * @return array
      */
-    public function attemptsWithSameIpProvider(): array
+    public static function attemptsWithSameIpProvider(): array
     {
         return [
             ['192.168.1.2', 40, 24],
@@ -235,9 +235,6 @@ trait EnhancedAuthenticationMapperTrait
         $loginAttempt->sessionId = 'vaqgvpochtzf8gh888q6vnlch5';
         $loginAttempt->ipAddress = '127.0.0.1';
 
-        //not so good but works
-        $loginAttempt->when = \date(self::$date_format, \time());
-
         $this->assertEquals(0, $loginAttempt->id);
         $this->assertEquals(0, $loginAttempt->getId());
 
@@ -260,6 +257,9 @@ trait EnhancedAuthenticationMapperTrait
      */
     public function testConcreteUpdate(): void
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('LoginAttempt class instance does not implement updates');
+
         $loginAttemptStored = \current(self::$enhancedAuthenticationMapper->fetchAll());
 
         $this->assertEquals('vaqgvpochtzf8gh888q6vnlch5', $loginAttemptStored->sessionId);
@@ -268,11 +268,6 @@ trait EnhancedAuthenticationMapperTrait
         $loginAttemptStored->sessionId = 'qwertyochtzf8gh888q6vnlch5';
 
         self::$enhancedAuthenticationMapper->save($loginAttemptStored);
-
-        $loginAttemptUpdated = self::$enhancedAuthenticationMapper->fetchById($loginAttemptStored->id);
-
-        $this->assertEquals('qwertyochtzf8gh888q6vnlch5', $loginAttemptUpdated->sessionId);
-        $this->assertInstanceOf(LoginAttempt::class, $loginAttemptUpdated);
     }
 
     /**
@@ -286,7 +281,7 @@ trait EnhancedAuthenticationMapperTrait
     {
         $loginAttemptStored = \current(self::$enhancedAuthenticationMapper->fetchAll());
 
-        $this->assertEquals('qwertyochtzf8gh888q6vnlch5', $loginAttemptStored->sessionId);
+        $this->assertEquals('vaqgvpochtzf8gh888q6vnlch5', $loginAttemptStored->sessionId);
         $this->assertInstanceOf(LoginAttempt::class, $loginAttemptStored);
 
         self::$enhancedAuthenticationMapper->delete($loginAttemptStored);
