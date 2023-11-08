@@ -44,7 +44,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public function userIdProvider(): array
+    public static function userIdProvider(): array
     {
         return [
             [1, 1],
@@ -54,7 +54,8 @@ trait EnhancedUserMapperTrait
             [5, 5],
             [6, 6],
             [7, 7],
-            [8, 0]
+            [8, 0],
+            [9, 0]
         ];
     }
 
@@ -71,6 +72,12 @@ trait EnhancedUserMapperTrait
     public function testFetchById(int $userId, int $expectedId): void
     {
         $enhancedUser = self::$enhancedUserMapper->fetchById($userId);
+
+        if ($expectedId === 0) {
+            $this->assertInstanceOf(NullDomainObject::class, $enhancedUser);
+            return;
+        }
+
         $this->assertEquals($enhancedUser->getId(), $expectedId);
     }
 
@@ -79,7 +86,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public function userNameProvider(): array
+    public static function userNameProvider(): array
     {
         return [
             ['root', 'root'],
@@ -130,7 +137,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public function userFetchLimitProvider(): array
+    public static function userFetchLimitProvider(): array
     {
         return [
             ['root', 0, 1],
@@ -169,7 +176,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public function permissionIdProvider(): array
+    public static function permissionIdProvider(): array
     {
         return [
             [1, 7],
@@ -226,7 +233,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public function permissionNameProvider(): array
+    public static function permissionNameProvider(): array
     {
         return [
             ['see users', 7],
@@ -259,7 +266,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public function roleIdProvider(): array
+    public static function roleIdProvider(): array
     {
         return [
             [1, 1],
@@ -313,7 +320,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public function roleNameProvider(): array
+    public static function roleNameProvider(): array
     {
         return [
             ['Administrator', 1],
