@@ -15,15 +15,21 @@ use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 
 /**
- * Permission Mapper Trait.
+ * Permission Extended Mapper Trait.
  */
-trait PermissionMapperTrait
+trait PermissionExtendedMapperTrait
 {
     /** @var ExtendedPDO Database connection. */
     protected static ExtendedPDO $pdo;
 
-    /** @var PermissionMapper The permission mapper class. */
-    protected static PermissionMapper $permissionMapper;
+    /** @var UserMapper The user mapper class. */
+    protected static UserMapper $userMapper;
+
+    /** @var RoleMapper The role mapper class. */
+    protected static RoleMapper $roleMapper;
+
+    /** @var PermissionExtendedMapper The permission extended mapper class. */
+    protected static PermissionExtendedMapper $permissionExtendedMapper;
 
     /**
      * Test new instance.
@@ -32,7 +38,7 @@ trait PermissionMapperTrait
      */
     public function testNewInstance(): void
     {
-        $this->assertInstanceOf(PermissionMapper::class, self::$permissionMapper);
+        $this->assertInstanceOf(PermissionMapper::class, self::$permissionExtendedMapper);
     }
 
     /**

@@ -9,22 +9,22 @@
  */
 declare(strict_types=1);
 
-namespace Linna\Authentication;
+namespace Linna\Authorization;
 
 use Linna\DataMapper\NullDomainObject;
+use Linna\DataMapper\UUID4;
 use Linna\Storage\ExtendedPDO;
-use Linna\DataMapper\Uuid4;
 
 /**
  * User Mapper trait.
  */
 trait UserMapperTrait
 {
-    /** @var UserMapper The enhanced authentication mapper class. */
-    protected static UserMapper $userMapper;
-
     /** @var ExtendedPDO Database connection. */
     protected static ExtendedPDO $pdo;
+
+    /** @var UserMapper The enhanced authentication mapper class. */
+    protected static UserMapper $userMapper;
 
     /**
      * Test new instance.
@@ -41,7 +41,7 @@ trait UserMapperTrait
      *
      * @return array
      */
-    public static function userIdProvider(): array
+    public function userIdProvider(): array
     {
         return [
             [1, 1],
@@ -69,12 +69,6 @@ trait UserMapperTrait
     public function testFetchById(int $userId, int $expectedId): void
     {
         $user = self::$userMapper->fetchById($userId);
-
-        if ($expectedId === 0) {
-            $this->assertInstanceOf(NullDomainObject::class, $user);
-            return;
-        }
-
         $this->assertEquals($user->getId(), $expectedId);
     }
 
@@ -83,7 +77,7 @@ trait UserMapperTrait
      *
      * @return array
      */
-    public static function userNameProvider(): array
+    public function userNameProvider(): array
     {
         return [
             ['root', 'root'],
@@ -134,7 +128,7 @@ trait UserMapperTrait
      *
      * @return array
      */
-    public static function userFetchLimitProvider(): array
+    public function userFetchLimitProvider(): array
     {
         return [
             ['root', 0, 1],

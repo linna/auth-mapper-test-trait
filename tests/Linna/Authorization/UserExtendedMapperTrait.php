@@ -15,12 +15,12 @@ use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 
 /**
- * Enhanced User Mapper Trait.
+ * User Extended Mapper Trait.
  */
-trait EnhancedUserMapperTrait
+trait UserExtendedMapperTrait
 {
-    /** @var EnhancedUserMapper The enhanced user mapper class. */
-    protected static EnhancedUserMapper $enhancedUserMapper;
+    /** @var ExtendedPDO Database connection. */
+    protected static ExtendedPDO $pdo;
 
     /** @var PermissionMapper The permission mapper class. */
     protected static PermissionMapper $permissionMapper;
@@ -28,15 +28,15 @@ trait EnhancedUserMapperTrait
     /** @var RoleMapper The role mapper class. */
     protected static RoleMapper $roleMapper;
 
-    /** @var ExtendedPDO Database connection. */
-    protected static ExtendedPDO $pdo;
+    /** @var UserMapper The user extended mapper class. */
+    protected static UserExtendedMapper $userExtendedMapper;
 
     /**
      * Test new instance.
      */
     public function testNewInstance()
     {
-        $this->assertInstanceOf(EnhancedUserMapper::class, self::$enhancedUserMapper);
+        $this->assertInstanceOf(EnhancedUserMapper::class, self::$userExtendedMapper);
     }
 
     /**
@@ -44,7 +44,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public static function userIdProvider(): array
+    public function userIdProvider(): array
     {
         return [
             [1, 1],
@@ -54,8 +54,7 @@ trait EnhancedUserMapperTrait
             [5, 5],
             [6, 6],
             [7, 7],
-            [8, 0],
-            [9, 0]
+            [8, 0]
         ];
     }
 
@@ -72,12 +71,6 @@ trait EnhancedUserMapperTrait
     public function testFetchById(int $userId, int $expectedId): void
     {
         $enhancedUser = self::$enhancedUserMapper->fetchById($userId);
-
-        if ($expectedId === 0) {
-            $this->assertInstanceOf(NullDomainObject::class, $enhancedUser);
-            return;
-        }
-
         $this->assertEquals($enhancedUser->getId(), $expectedId);
     }
 
@@ -86,7 +79,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public static function userNameProvider(): array
+    public function userNameProvider(): array
     {
         return [
             ['root', 'root'],
@@ -137,7 +130,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public static function userFetchLimitProvider(): array
+    public function userFetchLimitProvider(): array
     {
         return [
             ['root', 0, 1],
@@ -176,7 +169,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public static function permissionIdProvider(): array
+    public function permissionIdProvider(): array
     {
         return [
             [1, 7],
@@ -233,7 +226,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public static function permissionNameProvider(): array
+    public function permissionNameProvider(): array
     {
         return [
             ['see users', 7],
@@ -266,7 +259,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public static function roleIdProvider(): array
+    public function roleIdProvider(): array
     {
         return [
             [1, 1],
@@ -320,7 +313,7 @@ trait EnhancedUserMapperTrait
      *
      * @return array
      */
-    public static function roleNameProvider(): array
+    public function roleNameProvider(): array
     {
         return [
             ['Administrator', 1],

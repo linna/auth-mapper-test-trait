@@ -19,17 +19,11 @@ use Linna\Storage\ExtendedPDO;
  */
 trait RoleMapperTrait
 {
-    /** @var EnhancedUserMapper The enhanced user mapper class. */
-    protected static EnhancedUserMapper $enhancedUserMapper;
-
-    /** @var PermissionMapper The permission mapper class. */
-    protected static PermissionMapper $permissionMapper;
+    /** @var ExtendedPDO Database connection. */
+    protected static ExtendedPDO $pdo;
 
     /** @var RoleMapper The role mapper class. */
     protected static RoleMapper $roleMapper;
-
-    /** @var ExtendedPDO Database connection. */
-    protected static ExtendedPDO $pdo;
 
     /**
      * Test new instance.
