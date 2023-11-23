@@ -15,9 +15,9 @@ use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 
 /**
- * Role To User Mapper Trait.
+ * Role Extended Mapper Trait.
  */
-trait RoleToUserMapperTrait
+trait RoleExtendedMapperTrait
 {
     /** @var ExtendedPDO Database connection. */
     protected static ExtendedPDO $pdo;
