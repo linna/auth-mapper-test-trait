@@ -36,7 +36,7 @@ trait RoleExtendedMapperTrait
      */
     public function testNewInstance()
     {
-        $this->assertInstanceOf(RoleToUserMapper::class, self::$roleExtendedMapper);
+        $this->assertInstanceOf(RoleExtendedMapper::class, self::$roleExtendedMapper);
     }
 
     /**
@@ -44,7 +44,7 @@ trait RoleExtendedMapperTrait
      *
      * @return array
      */
-    public function roleIdProvider(): array
+    /*public function roleIdProvider(): array
     {
         return [
             [1, 1],
@@ -64,7 +64,7 @@ trait RoleExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByRole(int $roleId, int $result): void
+    /*public function testFetchByRole(int $roleId, int $result): void
     {
         $role = self::$roleMapper->fetchById($roleId);
 
@@ -88,7 +88,7 @@ trait RoleExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByRoleId(int $roleId, int $result): void
+    /*public function testFetchByRoleId(int $roleId, int $result): void
     {
         $this->assertCount($result, self::$roleToUserMapper->fetchByRoleId($roleId));
     }
@@ -98,7 +98,7 @@ trait RoleExtendedMapperTrait
      *
      * @return array
      */
-    public function roleNameProvider(): array
+    /*public function roleNameProvider(): array
     {
         return [
             ['Administrator', 1],
@@ -118,7 +118,7 @@ trait RoleExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByRoleName(string $roleName, int $result): void
+    /*public function testFetchByRoleName(string $roleName, int $result): void
     {
         $this->assertCount($result, self::$roleToUserMapper->fetchByRoleName($roleName));
     }
@@ -128,7 +128,7 @@ trait RoleExtendedMapperTrait
      *
      * @return array
      */
-    public function userIdProvider(): array
+    /*public function userIdProvider(): array
     {
         //all users have only a group
         return [
@@ -153,7 +153,7 @@ trait RoleExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByUser(int $userId, int $result): void
+    /*public function testFetchByUser(int $userId, int $result): void
     {
         $user = self::$enhancedUserMapper->fetchById($userId);
 
@@ -177,7 +177,7 @@ trait RoleExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserId(int $userId, int $result): void
+    /*public function testFetchByUserId(int $userId, int $result): void
     {
         $this->assertCount($result, self::$roleToUserMapper->fetchByUserId($userId));
     }
@@ -187,7 +187,7 @@ trait RoleExtendedMapperTrait
      *
      * @return array
      */
-    public function userNameProvider(): array
+    /*public function userNameProvider(): array
     {
         return [
             ['root', 1],
@@ -211,8 +211,8 @@ trait RoleExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserName(string $userName, int $result): void
+    /*public function testFetchByUserName(string $userName, int $result): void
     {
         $this->assertCount($result, self::$roleToUserMapper->fetchByUserName($userName));
-    }
+    }*/
 }

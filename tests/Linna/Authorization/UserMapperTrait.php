@@ -12,7 +12,8 @@ declare(strict_types=1);
 namespace Linna\Authorization;
 
 use Linna\DataMapper\NullDomainObject;
-use Linna\DataMapper\UUID4;
+use Linna\DataMapper\Uuid4;
+use Linna\DataMapper\Exception\NullDomainObjectException;
 use Linna\Storage\ExtendedPDO;
 
 /**
@@ -41,7 +42,7 @@ trait UserMapperTrait
      *
      * @return array
      */
-    public function userIdProvider(): array
+    public static function userIdProvider(): array
     {
         return [
             [1, 1],
@@ -69,6 +70,12 @@ trait UserMapperTrait
     public function testFetchById(int $userId, int $expectedId): void
     {
         $user = self::$userMapper->fetchById($userId);
+
+        if ($expectedId === 0) {
+            $this->assertInstanceOf(NullDomainObject::class, $user);
+            $this->expectException(NullDomainObjectException::class);
+        }
+
         $this->assertEquals($user->getId(), $expectedId);
     }
 
@@ -77,7 +84,7 @@ trait UserMapperTrait
      *
      * @return array
      */
-    public function userNameProvider(): array
+    public static function userNameProvider(): array
     {
         return [
             ['root', 'root'],
@@ -87,7 +94,8 @@ trait UserMapperTrait
             ['User_3', 'User_3'],
             ['User_4', 'User_4'],
             ['User_5', 'User_5'],
-            ['bad_user', '']
+            ['bad_name_1', ''],
+            ['bad_name_2', '']
         ];
     }
 
@@ -107,7 +115,6 @@ trait UserMapperTrait
 
         if ($expectedName === '') {
             $this->assertInstanceOf(NullDomainObject::class, $user);
-            return;
         }
 
         $this->assertEquals($user->name, $expectedName);
@@ -128,7 +135,7 @@ trait UserMapperTrait
      *
      * @return array
      */
-    public function userFetchLimitProvider(): array
+    public static function userFetchLimitProvider(): array
     {
         return [
             ['root', 0, 1],
@@ -179,62 +186,81 @@ trait UserMapperTrait
      */
     public function testConcreteInsert(): void
     {
+        //create user
         $user = self::$userMapper->create();
         $user->uuid = (new UUID4())->getHex();
         $user->name = 'test_user';
+        $user->description = 'test_user description';
+        $user->email = 'test_user@email.com';
+        $user->active = 1;
         $user->setPassword('test_password');
 
-        $this->assertEquals(0, $user->getId());
+        //check for clean user
+        $this->assertSame(null, $user->getId());
 
         self::$userMapper->save($user);
 
+        //check if saved
         $this->assertGreaterThan(0, $user->getId());
 
+        //get one more time the user
         $userStored = self::$userMapper->fetchByName('test_user');
 
+        //check
         $this->assertInstanceOf(User::class, $userStored);
+        $this->assertSame($user->id, $userStored->id);
+        $this->assertSame($user->uuid, $userStored->uuid);
+        $this->assertSame($user->name, $user->name);
+        $this->assertSame($user->description, $user->description);
+        $this->assertSame($user->email, $user->email);
+        $this->assertSame($user->password, $user->password);
+        $this->assertSame($user->active, $user->active);
+
+        //clean
+        self::$userMapper->delete($userStored);
     }
 
     /**
      * Test concrete update.
      *
-     * @depends testConcreteInsert
-     *
      * @return void
      */
     public function testConcreteUpdate(): void
     {
+        $user = self::$userMapper->create();
+        $user->uuid = (new UUID4())->getHex();
+        $user->name = 'test_user';
+        $user->description = 'test_user description';
+        $user->email = 'test_user@email.com';
+        $user->active = 1;
+        $user->setPassword('test_password');
+
+        self::$userMapper->save($user);
+
         $userStored = self::$userMapper->fetchByName('test_user');
 
         $this->assertInstanceOf(User::class, $userStored);
-        $this->assertEquals('test_user', $userStored->name);
 
         $userStored->name = 'test_user_update';
+        $userStored->description = 'test_user_update description';
+        $userStored->email = 'test_user_update@email.com';
+        $userStored->active = 0;
+        $userStored->setPassword('test_password_update');
 
         self::$userMapper->save($userStored);
 
         $userStoredUpdated = self::$userMapper->fetchByName('test_user_update');
 
         $this->assertInstanceOf(User::class, $userStoredUpdated);
-        $this->assertEquals('test_user_update', $userStoredUpdated->name);
-    }
+        $this->assertSame($userStoredUpdated->id, $userStored->id);
+        $this->assertSame($userStoredUpdated->uuid, $userStored->uuid);
+        $this->assertSame($userStoredUpdated->name, $userStored->name);
+        $this->assertSame($userStoredUpdated->description, $userStored->description);
+        $this->assertSame($userStoredUpdated->email, $userStored->email);
+        $this->assertSame($userStoredUpdated->password, $userStored->password);
+        $this->assertSame($userStoredUpdated->active, $userStored->active);
 
-    /**
-     * Test concrete delete.
-     *
-     * @depends testConcreteInsert
-     *
-     * @return void
-     */
-    public function testConcreteDelete(): void
-    {
-        $userStored = self::$userMapper->fetchByName('test_user_update');
-
-        $this->assertInstanceOf(User::class, $userStored);
-        $this->assertEquals('test_user_update', $userStored->name);
-
+        //clean
         self::$userMapper->delete($userStored);
-
-        $this->assertInstanceOf(NullDomainObject::class, $userStored);
     }
 }

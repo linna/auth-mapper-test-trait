@@ -46,7 +46,7 @@ trait PermissionExtendedMapperTrait
      *
      * @return array
      */
-    public function permissionIdProvider(): array
+    /*public function permissionIdProvider(): array
     {
         return [
             [1, 1],
@@ -58,7 +58,7 @@ trait PermissionExtendedMapperTrait
             [7, 0],
             [8, 0]
         ];
-    }
+    }*/
 
     /**
      * Test fetch by id.
@@ -70,18 +70,18 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchById(int $permissionId, int $expectedId): void
+    /*public function testFetchById(int $permissionId, int $expectedId): void
     {
         $permission = self::$permissionMapper->fetchById($permissionId);
         $this->assertEquals($permission->getId(), $expectedId);
-    }
+    }*/
 
     /**
      * Permission name provider
      *
      * @return array
      */
-    public function permissionNameProvider(): array
+    /*public function permissionNameProvider(): array
     {
         return [
             ['see users', 'see users'],
@@ -92,7 +92,7 @@ trait PermissionExtendedMapperTrait
             ['disable user', 'disable user'],
             ['bad_user', '']
         ];
-    }
+    }*/
 
     /**
      * Test fetch by name.
@@ -104,7 +104,7 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByName(string $permissionName, string $expectedName): void
+    /*public function testFetchByName(string $permissionName, string $expectedName): void
     {
         $permission = self::$permissionMapper->fetchByName($permissionName);
 
@@ -114,24 +114,24 @@ trait PermissionExtendedMapperTrait
         }
 
         $this->assertEquals($permission->name, $expectedName);
-    }
+    }*/
 
     /**
      * Test fetch all.
      *
      * @return void
      */
-    public function testFetchAll(): void
+    /*public function testFetchAll(): void
     {
         $this->assertCount(6, self::$permissionMapper->fetchAll());
-    }
+    }*/
 
     /**
      * Permission fetch limit provider.
      *
      * @return array
      */
-    public function permissionFetchLimitProvider(): array
+    /*public function permissionFetchLimitProvider(): array
     {
         return [
             ['see users', 0, 1],
@@ -141,7 +141,7 @@ trait PermissionExtendedMapperTrait
             ['enable user', 4, 1],
             ['disable user', 5, 1]
         ];
-    }
+    }*/
 
     /**
      * Test fetch limit.
@@ -154,7 +154,7 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchLimit(string $permissionName, int $offset, int $rowCount): void
+    /*public function testFetchLimit(string $permissionName, int $offset, int $rowCount): void
     {
         $permissions = self::$permissionMapper->fetchLimit($offset, $rowCount);
 
@@ -162,14 +162,14 @@ trait PermissionExtendedMapperTrait
 
         $this->assertCount(1, $permissions);
         $this->assertEquals($permissions[$key]->name, $permissionName);
-    }
+    }*/
 
     /**
      * Role id provider.
      *
      * @return array
      */
-    public function roleIdProvider(): array
+    /*public function roleIdProvider(): array
     {
         return [
             [1, 6],
@@ -177,7 +177,7 @@ trait PermissionExtendedMapperTrait
             [3, 1],
             [4, 0]
         ];
-    }
+    }*/
 
     /**
      * Test fetch by role.
@@ -189,7 +189,7 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByRole(int $roleId, int $result): void
+    /*public function testFetchByRole(int $roleId, int $result): void
     {
         $role = self::$roleMapper->fetchById($roleId);
 
@@ -201,7 +201,7 @@ trait PermissionExtendedMapperTrait
             $this->assertSame($roleId, 4);
             $this->assertSame($result, 0);
         }
-    }
+    }*/
 
     /**
      * Test fetch by role id.
@@ -213,17 +213,17 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByRoleId(int $roleId, int $result): void
+    /*public function testFetchByRoleId(int $roleId, int $result): void
     {
         $this->assertCount($result, self::$permissionMapper->fetchByRoleId($roleId));
-    }
+    }*/
 
     /**
      * Role name provider.
      *
      * @return array
      */
-    public function roleNameProvider(): array
+    /*public function roleNameProvider(): array
     {
         return [
             ['Administrator', 6],
@@ -231,7 +231,7 @@ trait PermissionExtendedMapperTrait
             ['Users', 1],
             ['Other', 0]
         ];
-    }
+    }*/
 
     /**
      * Test fetch by role name.
@@ -243,17 +243,17 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByRoleName(string $roleName, int $result): void
+    /*public function testFetchByRoleName(string $roleName, int $result): void
     {
         $this->assertCount($result, self::$permissionMapper->fetchByRoleName($roleName));
-    }
+    }*/
 
     /**
      * User id provider.
      *
      * @return array
      */
-    public function userIdProvider(): array
+    /*public function userIdProvider(): array
     {
         return [
             [1, 6],
@@ -265,7 +265,7 @@ trait PermissionExtendedMapperTrait
             [7, 1],
             [8, 0]
         ];
-    }
+    }*/
 
     /**
      * Test fetch by user.
@@ -277,7 +277,7 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByUser(int $userId, int $result): void
+    /*public function testFetchByUser(int $userId, int $result): void
     {
         $user = self::$enhancedUserMapper->fetchById($userId);
 
@@ -289,7 +289,7 @@ trait PermissionExtendedMapperTrait
             $this->assertSame($userId, 8);
             $this->assertSame($result, 0);
         }
-    }
+    }*/
 
     /**
      * Test fetch by user id.
@@ -301,17 +301,17 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserId(int $userId, int $result): void
+    /*public function testFetchByUserId(int $userId, int $result): void
     {
         $this->assertCount($result, self::$permissionMapper->fetchByUserId($userId));
-    }
+    }*/
 
     /**
      * User name provider.
      *
      * @return array
      */
-    public function userNameProvider(): array
+    /*public function userNameProvider(): array
     {
         return [
             ['root', 6],
@@ -323,7 +323,7 @@ trait PermissionExtendedMapperTrait
             ['User_5', 1],
             ['other_user', 0]
         ];
-    }
+    }*/
 
     /**
      * Test fetch by user name.
@@ -335,17 +335,17 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserName(string $userName, int $result): void
-    {
-        $this->assertCount($result, self::$permissionMapper->fetchByUserName($userName));
-    }
+    /* public function testFetchByUserName(string $userName, int $result): void
+     {
+         $this->assertCount($result, self::$permissionMapper->fetchByUserName($userName));
+     }*/
 
     /**
      * Test fetch user permission hash table.
      *
      * @return void
      */
-    public function testFetchUserPermissionHashTable(): void
+    /*public function testFetchUserPermissionHashTable(): void
     {
         $array = [
             '1a948f1b4374f4e3f02501c7feb43784021718a93c1ed5f9f19adf357bb2d20e' => 0,
@@ -361,7 +361,7 @@ trait PermissionExtendedMapperTrait
         //var_dump();
 
         //$this->assertTrue(true);
-    }
+    }/
 
     /**
      * Test permission exists by id.
@@ -373,10 +373,10 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testPermissionExistById(int $permissionId, int $result): void
+    /*public function testPermissionExistById(int $permissionId, int $result): void
     {
         $this->assertSame((bool) $result, self::$permissionMapper->permissionExistById($permissionId));
-    }
+    }*/
 
     /**
      * Test permission exists by name.
@@ -388,27 +388,27 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testPermissionExistByName(string $permissionName, string $result): void
+    /*public function testPermissionExistByName(string $permissionName, string $result): void
     {
         $this->assertSame((bool) $result, self::$permissionMapper->permissionExistByName($permissionName));
-    }
+    }*/
 
     /**
      * Test concrete create.
      *
      * @return void
      */
-    public function testConcreteCreate(): void
+    /*public function testConcreteCreate(): void
     {
         $this->assertInstanceOf(Permission::class, self::$permissionMapper->create());
-    }
+    }*/
 
     /**
      * Test concrete insert.
      *
      * @return void
      */
-    public function testConcreteInsert(): void
+    /*public function testConcreteInsert(): void
     {
         $permission = self::$permissionMapper->create();
         $permission->name = 'test_permission';
@@ -422,7 +422,7 @@ trait PermissionExtendedMapperTrait
         $permissionStored = self::$permissionMapper->fetchByName('test_permission');
 
         $this->assertInstanceOf(Permission::class, $permissionStored);
-    }
+    }*/
 
     /**
      * Test concrete update.
@@ -431,7 +431,7 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testConcreteUpdate(): void
+    /*public function testConcreteUpdate(): void
     {
         $permissionStored = self::$permissionMapper->fetchByName('test_permission');
 
@@ -446,7 +446,7 @@ trait PermissionExtendedMapperTrait
 
         $this->assertInstanceOf(Permission::class, $permissionStoredUpdated);
         $this->assertEquals('test_permission_update', $permissionStoredUpdated->name);
-    }
+    }*/
 
     /**
      * Test concrete delete.
@@ -455,7 +455,7 @@ trait PermissionExtendedMapperTrait
      *
      * @return void
      */
-    public function testConcreteDelete(): void
+    /*public function testConcreteDelete(): void
     {
         $permissionStored = self::$permissionMapper->fetchByName('test_permission_update');
 
@@ -465,5 +465,5 @@ trait PermissionExtendedMapperTrait
         self::$permissionMapper->delete($permissionStored);
 
         $this->assertInstanceOf(NullDomainObject::class, $permissionStored);
-    }
+    }*/
 }

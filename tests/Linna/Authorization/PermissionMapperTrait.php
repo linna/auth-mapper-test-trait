@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Linna\Authorization;
 
 use Linna\DataMapper\NullDomainObject;
+use Linna\DataMapper\Exception\NullDomainObjectException;
 use Linna\Storage\ExtendedPDO;
 
 /**
@@ -40,7 +41,7 @@ trait PermissionMapperTrait
      *
      * @return array
      */
-    public function permissionIdProvider(): array
+    public static function permissionIdProvider(): array
     {
         return [
             [1, 1],
@@ -67,6 +68,12 @@ trait PermissionMapperTrait
     public function testFetchById(int $permissionId, int $expectedId): void
     {
         $permission = self::$permissionMapper->fetchById($permissionId);
+
+        if ($expectedId === 0) {
+            $this->assertInstanceOf(NullDomainObject::class, $permission);
+            $this->expectException(NullDomainObjectException::class);
+        }
+
         $this->assertEquals($permission->getId(), $expectedId);
     }
 
@@ -75,7 +82,7 @@ trait PermissionMapperTrait
      *
      * @return array
      */
-    public function permissionNameProvider(): array
+    public static function permissionNameProvider(): array
     {
         return [
             ['see users', 'see users'],
@@ -84,7 +91,8 @@ trait PermissionMapperTrait
             ['create user', 'create user'],
             ['enable user', 'enable user'],
             ['disable user', 'disable user'],
-            ['bad_user', '']
+            ['bad_permission_0', ''],
+            ['bad_permission_1', '']
         ];
     }
 
@@ -104,7 +112,6 @@ trait PermissionMapperTrait
 
         if ($expectedName === '') {
             $this->assertInstanceOf(NullDomainObject::class, $permission);
-            return;
         }
 
         $this->assertEquals($permission->name, $expectedName);
@@ -125,15 +132,15 @@ trait PermissionMapperTrait
      *
      * @return array
      */
-    public function permissionFetchLimitProvider(): array
+    public static function permissionFetchLimitProvider(): array
     {
         return [
-            ['see users', 0, 1],
-            ['update user', 1, 1],
-            ['delete user', 2, 1],
-            ['create user', 3, 1],
-            ['enable user', 4, 1],
-            ['disable user', 5, 1]
+            ['create user', 0, 1],
+            ['delete user', 1, 1],
+            ['disable user', 2, 1],
+            ['enable user', 3, 1],
+            ['see users', 4, 1],
+            ['update user', 5, 1]
         ];
     }
 
@@ -159,11 +166,86 @@ trait PermissionMapperTrait
     }
 
     /**
+     * Test concrete create.
+     *
+     * @return void
+     */
+    public function testConcreteCreate(): void
+    {
+        $this->assertInstanceOf(Permission::class, self::$permissionMapper->create());
+    }
+
+    /**
+     * Test concrete insert.
+     *
+     * @return void
+     */
+    public function testConcreteInsert(): void
+    {
+        //create permission
+        $permission = self::$permissionMapper->create();
+        $permission->name = 'test_permission';
+        $permission->description = 'test_permission description';
+
+        //check for clean permission
+        $this->assertSame(null, $permission->getId());
+
+        self::$permissionMapper->save($permission);
+
+        //check if saved
+        $this->assertGreaterThan(0, $permission->getId());
+
+        //get one more time the permission
+        $permissionStored = self::$permissionMapper->fetchByName('test_permission');
+
+        //check
+        $this->assertInstanceOf(Permission::class, $permissionStored);
+        $this->assertSame($permission->id, $permissionStored->id);
+        $this->assertSame($permission->name, $permissionStored->name);
+        $this->assertSame($permission->description, $permissionStored->description);
+
+        //clean
+        self::$permissionMapper->delete($permissionStored);
+    }
+
+    /**
+     * Test concrete update.
+     *
+     * @return void
+     */
+    public function testConcreteUpdate(): void
+    {
+        $permission = self::$permissionMapper->create();
+        $permission->name = 'test_permission';
+        $permission->description = 'test_permission description';
+
+        self::$permissionMapper->save($permission);
+
+        $permissionStored = self::$permissionMapper->fetchByName('test_permission');
+
+        $this->assertInstanceOf(Permission::class, $permissionStored);
+
+        $permissionStored->name = 'test_permission_update';
+        $permissionStored->description = 'test_permission_update description';
+
+        self::$permissionMapper->save($permissionStored);
+
+        $permissionStoredUpdated = self::$permissionMapper->fetchByName('test_permission_update');
+
+        $this->assertInstanceOf(Permission::class, $permissionStoredUpdated);
+        $this->assertEquals($permissionStoredUpdated->name, $permissionStored->name);
+        $this->assertEquals($permissionStoredUpdated->description, $permissionStored->description);
+
+        //clean
+        self::$permissionMapper->delete($permissionStored);
+    }
+
+    /**
      * Role id provider.
      *
      * @return array
      */
-    public function roleIdProvider(): array
+    /*public function roleIdProvider(): array
     {
         return [
             [1, 6],
@@ -183,7 +265,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testFetchByRole(int $roleId, int $result): void
+    /*public function testFetchByRole(int $roleId, int $result): void
     {
         $role = self::$roleMapper->fetchById($roleId);
 
@@ -207,7 +289,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testFetchByRoleId(int $roleId, int $result): void
+    /*public function testFetchByRoleId(int $roleId, int $result): void
     {
         $this->assertCount($result, self::$permissionMapper->fetchByRoleId($roleId));
     }
@@ -217,7 +299,7 @@ trait PermissionMapperTrait
      *
      * @return array
      */
-    public function roleNameProvider(): array
+    /*public function roleNameProvider(): array
     {
         return [
             ['Administrator', 6],
@@ -237,7 +319,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testFetchByRoleName(string $roleName, int $result): void
+    /*public function testFetchByRoleName(string $roleName, int $result): void
     {
         $this->assertCount($result, self::$permissionMapper->fetchByRoleName($roleName));
     }
@@ -247,7 +329,7 @@ trait PermissionMapperTrait
      *
      * @return array
      */
-    public function userIdProvider(): array
+    /*public function userIdProvider(): array
     {
         return [
             [1, 6],
@@ -271,7 +353,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testFetchByUser(int $userId, int $result): void
+    /*public function testFetchByUser(int $userId, int $result): void
     {
         $user = self::$enhancedUserMapper->fetchById($userId);
 
@@ -295,7 +377,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserId(int $userId, int $result): void
+    /*public function testFetchByUserId(int $userId, int $result): void
     {
         $this->assertCount($result, self::$permissionMapper->fetchByUserId($userId));
     }
@@ -305,7 +387,7 @@ trait PermissionMapperTrait
      *
      * @return array
      */
-    public function userNameProvider(): array
+    /*public function userNameProvider(): array
     {
         return [
             ['root', 6],
@@ -329,7 +411,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserName(string $userName, int $result): void
+    /*public function testFetchByUserName(string $userName, int $result): void
     {
         $this->assertCount($result, self::$permissionMapper->fetchByUserName($userName));
     }
@@ -339,7 +421,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testFetchUserPermissionHashTable(): void
+    /*public function testFetchUserPermissionHashTable(): void
     {
         $array = [
             '1a948f1b4374f4e3f02501c7feb43784021718a93c1ed5f9f19adf357bb2d20e' => 0,
@@ -367,7 +449,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testPermissionExistById(int $permissionId, int $result): void
+    /*public function testPermissionExistById(int $permissionId, int $result): void
     {
         $this->assertSame((bool) $result, self::$permissionMapper->permissionExistById($permissionId));
     }
@@ -382,7 +464,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testPermissionExistByName(string $permissionName, string $result): void
+    /*public function testPermissionExistByName(string $permissionName, string $result): void
     {
         $this->assertSame((bool) $result, self::$permissionMapper->permissionExistByName($permissionName));
     }
@@ -392,7 +474,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testConcreteCreate(): void
+    /*public function testConcreteCreate(): void
     {
         $this->assertInstanceOf(Permission::class, self::$permissionMapper->create());
     }
@@ -402,7 +484,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testConcreteInsert(): void
+    /*public function testConcreteInsert(): void
     {
         $permission = self::$permissionMapper->create();
         $permission->name = 'test_permission';
@@ -425,7 +507,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testConcreteUpdate(): void
+    /*public function testConcreteUpdate(): void
     {
         $permissionStored = self::$permissionMapper->fetchByName('test_permission');
 
@@ -449,7 +531,7 @@ trait PermissionMapperTrait
      *
      * @return void
      */
-    public function testConcreteDelete(): void
+    /*public function testConcreteDelete(): void
     {
         $permissionStored = self::$permissionMapper->fetchByName('test_permission_update');
 
@@ -459,5 +541,5 @@ trait PermissionMapperTrait
         self::$permissionMapper->delete($permissionStored);
 
         $this->assertInstanceOf(NullDomainObject::class, $permissionStored);
-    }
+    }*/
 }

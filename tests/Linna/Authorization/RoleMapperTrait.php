@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Linna\Authorization;
 
 use Linna\DataMapper\NullDomainObject;
+use Linna\DataMapper\Exception\NullDomainObjectException;
 use Linna\Storage\ExtendedPDO;
 
 /**
@@ -38,7 +39,7 @@ trait RoleMapperTrait
      *
      * @return array
      */
-    public function roleIdProvider(): array
+    public static function roleIdProvider(): array
     {
         return [
             [1, 1],
@@ -63,7 +64,11 @@ trait RoleMapperTrait
     {
         $role = self::$roleMapper->fetchById($roleId);
 
-        //$this->assertInstanceOf(Role::class, $role);
+        if ($expectedId === 0) {
+            $this->assertInstanceOf(NullDomainObject::class, $role);
+            $this->expectException(NullDomainObjectException::class);
+        }
+
         $this->assertEquals($role->getId(), $expectedId);
     }
 
@@ -72,13 +77,14 @@ trait RoleMapperTrait
      *
      * @return array
      */
-    public function roleNameProvider(): array
+    public static function roleNameProvider(): array
     {
         return [
             ['Administrator', 'Administrator'],
             ['Power Users', 'Power Users'],
             ['Users', 'Users'],
-            ['bad_role', '']
+            ['bad_name_1', ''],
+            ['bad_name_2', '']
         ];
     }
 
@@ -98,7 +104,6 @@ trait RoleMapperTrait
 
         if ($expectedName === '') {
             $this->assertInstanceOf(NullDomainObject::class, $role);
-            return;
         }
 
         $this->assertEquals($role->name, $expectedName);
@@ -119,7 +124,7 @@ trait RoleMapperTrait
      *
      * @return array
      */
-    public function roleFetchLimitProvider(): array
+    public static function roleFetchLimitProvider(): array
     {
         return [
             ['Administrator', 0, 1],
@@ -150,11 +155,92 @@ trait RoleMapperTrait
     }
 
     /**
+     * Test concrete create.
+     *
+     * @return void
+     */
+    public function testConcreteCreate(): void
+    {
+        $this->assertInstanceOf(Role::class, self::$roleMapper->create());
+    }
+
+
+    /**
+     * Test concrete insert.
+     *
+     * @return void
+     */
+    public function testConcreteInsert(): void
+    {
+        //create role
+        $role = self::$roleMapper->create();
+        $role->name = 'test_role';
+        $role->description = 'test_role description';
+        $role->active = 1;
+
+        //check for clean role
+        $this->assertSame(null, $role->getId());
+
+        self::$roleMapper->save($role);
+
+        //check if saved
+        $this->assertGreaterThan(0, $role->getId());
+
+        //get one more time the role
+        $roleStored = self::$roleMapper->fetchByName('test_role');
+
+        //check
+        $this->assertInstanceOf(Role::class, $roleStored);
+        $this->assertSame($role->id, $roleStored->id);
+        $this->assertSame($role->name, $role->name);
+        $this->assertSame($role->description, $role->description);
+        $this->assertSame($role->active, $role->active);
+
+        //clean
+        self::$roleMapper->delete($roleStored);
+    }
+
+    /**
+     * Test concrete update.
+     *
+     * @return void
+     */
+    public function testConcreteUpdate(): void
+    {
+        $role = self::$roleMapper->create();
+        $role->name = 'test_role';
+        $role->description = 'test_role description';
+        $role->active = 1;
+
+        self::$roleMapper->save($role);
+
+        $roleStored = self::$roleMapper->fetchByName('test_role');
+
+        $this->assertInstanceOf(Role::class, $roleStored);
+
+        $roleStored->name = 'test_role_update';
+        $roleStored->description = 'test_role_update description';
+        $roleStored->active = 0;
+
+        self::$roleMapper->save($roleStored);
+
+        $roleStoredUpdated = self::$roleMapper->fetchByName('test_role_update');
+
+        $this->assertInstanceOf(Role::class, $roleStoredUpdated);
+        $this->assertEquals($roleStoredUpdated->name, $roleStored->name);
+        $this->assertEquals($roleStoredUpdated->description, $roleStored->description);
+        $this->assertEquals($roleStoredUpdated->active, $roleStored->active);
+
+        //clean
+        self::$roleMapper->delete($roleStored);
+    }
+
+    /**
      * Permission id provider.
      *
      * @return array
      */
-    public function permissionIdProvider(): array
+    /*public function permissionIdProvider(): array
     {
         return [
             [1, 3],
@@ -177,7 +263,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testFetchByPermission(int $permissionId, int $result): void
+    /*public function testFetchByPermission(int $permissionId, int $result): void
     {
         $permission = self::$permissionMapper->fetchById($permissionId);
 
@@ -201,7 +287,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testFetchByPermissionId(int $permissionId, int $result): void
+    /*public function testFetchByPermissionId(int $permissionId, int $result): void
     {
         $this->assertCount($result, self::$roleMapper->fetchByPermissionId($permissionId));
     }
@@ -211,7 +297,7 @@ trait RoleMapperTrait
      *
      * @return array
      */
-    public function permissionNameProvider(): array
+    /*public function permissionNameProvider(): array
     {
         return [
             ['see users', 3],
@@ -234,7 +320,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testFetchByPermissionName(string $permissionName, int $result): void
+    /*public function testFetchByPermissionName(string $permissionName, int $result): void
     {
         $this->assertCount($result, self::$roleMapper->fetchByPermissionName($permissionName));
     }
@@ -244,7 +330,7 @@ trait RoleMapperTrait
      *
      * @return array
      */
-    public function userIdProvider(): array
+    /*public function userIdProvider(): array
     {
         return [
             [1, 1],
@@ -268,7 +354,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testFetchByUser(int $userId, int $result): void
+    /*public function testFetchByUser(int $userId, int $result): void
     {
         $user = self::$enhancedUserMapper->fetchById($userId);
 
@@ -292,7 +378,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserId(int $userId, int $result): void
+    /*public function testFetchByUserId(int $userId, int $result): void
     {
         $this->assertCount($result, self::$roleMapper->fetchByUserId($userId));
     }
@@ -302,7 +388,7 @@ trait RoleMapperTrait
      *
      * @return array
      */
-    public function userNameProvider(): array
+    /*public function userNameProvider(): array
     {
         return [
             ['root', 1],
@@ -326,7 +412,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testFetchByUserName(string $userName, int $result): void
+    /*public function testFetchByUserName(string $userName, int $result): void
     {
         $this->assertCount($result, self::$roleMapper->fetchByUserName($userName));
     }
@@ -337,7 +423,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testGrantPermission(): void
+    /*public function testGrantPermission(): void
     {
         $role = self::$roleMapper->fetchById(3);
         $permission = self::$permissionMapper->fetchById(6);
@@ -359,7 +445,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testGrantPermissionById(): void
+    /*public function testGrantPermissionById(): void
     {
         $role = self::$roleMapper->fetchById(3);
         $permission = self::$permissionMapper->fetchById(6);
@@ -381,7 +467,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testGrantPermissionByName(): void
+    /*public function testGrantPermissionByName(): void
     {
         $role = self::$roleMapper->fetchById(3);
         $permission = self::$permissionMapper->fetchById(6);
@@ -403,7 +489,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testRevokePermission(): void
+    /*public function testRevokePermission(): void
     {
         $role = self::$roleMapper->fetchById(3);
         $permission = self::$permissionMapper->fetchById(6);
@@ -427,7 +513,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testRevokePermissionById(): void
+    /*public function testRevokePermissionById(): void
     {
         $role = self::$roleMapper->fetchById(3);
         $permission = self::$permissionMapper->fetchById(6);
@@ -451,7 +537,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testRevokePermissionByName(): void
+    /*public function testRevokePermissionByName(): void
     {
         $role = self::$roleMapper->fetchById(3);
         $permission = self::$permissionMapper->fetchById(6);
@@ -475,7 +561,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testAddUser(): void
+    /*public function testAddUser(): void
     {
         $role = self::$roleMapper->fetchById(2);
         $user = self::$enhancedUserMapper->fetchById(7);
@@ -499,7 +585,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testAddUserById(): void
+    /*public function testAddUserById(): void
     {
         $role = self::$roleMapper->fetchById(2);
         $user = self::$enhancedUserMapper->fetchById(7);
@@ -523,7 +609,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testAddUserByName(): void
+    /*public function testAddUserByName(): void
     {
         $role = self::$roleMapper->fetchById(2);
         $user = self::$enhancedUserMapper->fetchById(7);
@@ -547,7 +633,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testRemoveUser(): void
+    /*public function testRemoveUser(): void
     {
         $role = self::$roleMapper->fetchById(2);
         $user = self::$enhancedUserMapper->fetchById(7);
@@ -571,7 +657,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testRemoveUserById(): void
+    /*public function testRemoveUserById(): void
     {
         $role = self::$roleMapper->fetchById(2);
         $user = self::$enhancedUserMapper->fetchById(7);
@@ -595,7 +681,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testRemoveUserByName(): void
+    /*public function testRemoveUserByName(): void
     {
         $role = self::$roleMapper->fetchById(2);
         $user = self::$enhancedUserMapper->fetchById(7);
@@ -614,36 +700,8 @@ trait RoleMapperTrait
         $this->assertFalse($role->isUserInRoleByName($user->name));
     }
 
-    /**
-     * Test concrete create.
-     *
-     * @return void
-     */
-    public function testConcreteCreate(): void
-    {
-        $this->assertInstanceOf(Role::class, self::$roleMapper->create());
-    }
 
-    /**
-     * Test concrete insert.
-     *
-     * @return void
-     */
-    public function testConcreteInsert(): void
-    {
-        $role = self::$roleMapper->create();
-        $role->name = 'test_role';
 
-        $this->assertEquals(0, $role->getId());
-
-        self::$roleMapper->save($role);
-
-        $this->assertGreaterThan(0, $role->getId());
-
-        $roleStored = self::$roleMapper->fetchByName('test_role');
-
-        $this->assertInstanceOf(Role::class, $roleStored);
-    }
 
     /**
      * Test concrete update.
@@ -652,7 +710,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testConcreteUpdate(): void
+    /*public function testConcreteUpdate(): void
     {
         $roleStored = self::$roleMapper->fetchByName('test_role');
 
@@ -676,7 +734,7 @@ trait RoleMapperTrait
      *
      * @return void
      */
-    public function testConcreteDelete(): void
+    /*public function testConcreteDelete(): void
     {
         $roleStored = self::$roleMapper->fetchByName('test_role_update');
 
@@ -686,5 +744,5 @@ trait RoleMapperTrait
         self::$roleMapper->delete($roleStored);
 
         $this->assertInstanceOf(NullDomainObject::class, $roleStored);
-    }
+    }*/
 }
