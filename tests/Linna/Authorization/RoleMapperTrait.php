@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Linna\Authorization;
 
+use Linna\Authentication\Password;
 use Linna\DataMapper\NullDomainObject;
 use Linna\DataMapper\Exception\NullDomainObjectException;
 use Linna\Storage\ExtendedPDO;
@@ -152,6 +153,174 @@ trait RoleMapperTrait
 
         $this->assertCount(1, $role);
         $this->assertEquals($role[$key]->name, $roleName);
+    }
+
+    /**
+     * Permission id provider.
+     *
+     * @return array
+     */
+    public static function permissionIdProvider(): array
+    {
+        return [
+            [1, 3],
+            [2, 2],
+            [3, 1],
+            [4, 1],
+            [5, 2],
+            [6, 2],
+            [7, 0],
+            [8, 0],
+            [9, 0]
+        ];
+    }
+
+    /**
+     * Test fetch by permission.
+     *
+     * @dataProvider permissionIdProvider
+     *
+     * @param int $permissionId
+     * @param int $result
+     *
+     * @return void
+     */
+    public function testFetchByPermission(int $permissionId, int $result): void
+    {
+        $this->assertCount($result, self::$roleMapper->fetchByPermission(new Permission(id:$permissionId)));
+    }
+
+    /**
+     * Test fetch by permission id.
+     *
+     * @dataProvider permissionIdProvider
+     *
+     * @param int $permissionId
+     * @param int $result
+     *
+     * @return void
+     */
+    public function testFetchByPermissionId(int $permissionId, int $result): void
+    {
+        $this->assertCount($result, self::$roleMapper->fetchByPermissionId($permissionId));
+    }
+
+    /**
+     * Permission name provider.
+     *
+     * @return array
+     */
+    public static function permissionNameProvider(): array
+    {
+        return [
+            ['see users', 3],
+            ['update user', 2],
+            ['delete user', 1],
+            ['create user', 1],
+            ['enable user', 2],
+            ['disable user', 2],
+            ['unknown permission 1', 0],
+            ['unknown permission 2', 0]
+        ];
+    }
+
+    /**
+     * Test fetch by permission name.
+     *
+     * @dataProvider permissionNameProvider
+     *
+     * @param string $permissionName
+     * @param int    $result
+     *
+     * @return void
+     */
+    public function testFetchByPermissionName(string $permissionName, int $result): void
+    {
+        $this->assertCount($result, self::$roleMapper->fetchByPermissionName($permissionName));
+    }
+
+    /**
+     * User id provider.
+     *
+     * @return array
+     */
+    public static function userIdProvider(): array
+    {
+        return [
+            [1, 1],
+            //[2, 1],
+            //[3, 1],
+            //[4, 1],
+            //[5, 1],
+            //[6, 1],
+           // [7, 1],
+           // [8, 0]
+        ];
+    }
+
+    /**
+     * Test fetch by user.
+     *
+     * @dataProvider userIdProvider
+     *
+     * @param int $userId
+     * @param int $result
+     *
+     * @return void
+     */
+    public function testFetchByUser(int $userId, int $result): void
+    {
+        $this->assertCount($result, self::$roleMapper->fetchByUser(new User(passwordUtility: new Password(), id:$permissionId)));
+    }
+
+    /**
+     * Test fetch by user id.
+     *
+     * @dataProvider userIdProvider
+     *
+     * @param int $userId
+     * @param int $result
+     *
+     * @return void
+     */
+    public function testFetchByUserId(int $userId, int $result): void
+    {
+        $this->assertCount($result, self::$roleMapper->fetchByUserId($userId));
+    }
+
+    /**
+     * User name provider.
+     *
+     * @return array
+     */
+    public static function userNameProvider(): array
+    {
+        return [
+            ['root', 1],
+            //['User_0', 1],
+           // ['User_1', 1],
+           // ['User_2', 1],
+          //  ['User_3', 1],
+          //  ['User_4', 1],
+          //  ['User_5', 1],
+          //  ['unknown user 1', 0],
+          //  ['unknown user 2', 0]
+        ];
+    }
+
+    /**
+     * Test fetch by user name.
+     *
+     * @dataProvider userNameProvider
+     *
+     * @param string $userName
+     * @param int    $result
+     *
+     * @return void
+     */
+    public function testFetchByUserName(string $userName, int $result): void
+    {
+        $this->assertCount($result, self::$roleMapper->fetchByUserName($userName));
     }
 
     /**
