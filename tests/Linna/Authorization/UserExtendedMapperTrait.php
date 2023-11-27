@@ -40,6 +40,166 @@ trait UserExtendedMapperTrait
     }
 
     /**
+     * Permission id provider.
+     *
+     * @return array
+     */
+    public static function userPermissionProvider(): array
+    {
+        return [
+            [self::$userExtendedMapper->fetchById(7), self::$permissionMapper->fetchById(6)],
+           // [2, 3],
+           // [3, 2],
+           // [4, 2],
+           // [5, 5],
+           // [6, 5],
+           // [7, 0],
+           // [8, 0],
+           // [9, 0]
+        ];
+    }
+
+    /**
+     * Test grant permission.
+     *
+     * @return void
+     */
+    public function testGrantPermission(/*UserExtended $user, Permission $permission*/): void
+    {
+        $user = self::$userExtendedMapper->fetchById(7);
+        $permission = self::$permissionMapper->fetchById(6);
+
+        $this->assertInstanceOf(UserExtended::class, $user);
+        $this->assertInstanceOf(Permission::class, $permission);
+
+        self::$userExtendedMapper->grantPermission($user, $permission);
+
+        $this->assertTrue($user->can($permission));
+
+        self::$userExtendedMapper->revokePermission($user, $permission);
+
+        $this->assertFalse($user->can($permission));
+    }
+
+    /**
+     * Test grant permission by id.
+     *
+     * @return void
+     */
+    public function testGrantPermissionById(): void
+    {
+        $user = self::$userExtendedMapper->fetchById(7);
+        $permission = self::$permissionMapper->fetchById(6);
+
+        $this->assertInstanceOf(UserExtended::class, $user);
+        $this->assertInstanceOf(Permission::class, $permission);
+
+        self::$userExtendedMapper->grantPermissionById($user, $permission->id);
+
+        $this->assertTrue($user->canById($permission->id));
+
+        self::$userExtendedMapper->revokePermissionById($user, $permission->id);
+
+        $this->assertFalse($user->canById($permission->id));
+
+        // test for exsisting permission
+    }
+
+    /**
+     * Test grant permission by name.
+     *
+     * @return void
+     */
+    public function testGrantPermissionByName(): void
+    {
+        $user = self::$userExtendedMapper->fetchById(7);
+        $permission = self::$permissionMapper->fetchById(6);
+
+        $this->assertInstanceOf(UserExtended::class, $user);
+        $this->assertInstanceOf(Permission::class, $permission);
+
+        self::$userExtendedMapper->grantPermissionByName($user, $permission->name);
+
+        $this->assertTrue($user->canByName($permission->name));
+
+        self::$userExtendedMapper->revokePermissionByName($user, $permission->name);
+
+        $this->assertFalse($user->canByName($permission->name));
+    }
+
+    /**
+         * Test revoke permission.
+         *
+         * @return void
+         */
+    public function testRevokePermission(): void
+    {
+        $user = self::$userExtendedMapper->fetchById(7);
+        $permission = self::$permissionMapper->fetchById(6);
+
+        $this->assertInstanceOf(UserExtended::class, $user);
+        $this->assertInstanceOf(Permission::class, $permission);
+
+        $this->assertFalse($user->can($permission));
+
+        self::$userExtendedMapper->grantPermission($user, $permission);
+
+        $this->assertTrue($user->can($permission));
+
+        self::$userExtendedMapper->revokePermission($user, $permission);
+
+        $this->assertFalse($user->can($permission));
+    }
+
+    /**
+     * Test revoke permission by id.
+     *
+     * @return void
+     */
+    public function testRevokePermissionById(): void
+    {
+        $user = self::$userExtendedMapper->fetchById(7);
+        $permission = self::$permissionMapper->fetchById(6);
+
+        $this->assertInstanceOf(UserExtended::class, $user);
+        $this->assertInstanceOf(Permission::class, $permission);
+
+        $this->assertFalse($user->canById($permission->id));
+
+        self::$userExtendedMapper->grantPermissionById($user, $permission->id);
+
+        $this->assertTrue($user->canById($permission->id));
+
+        self::$userExtendedMapper->revokePermissionById($user, $permission->id);
+
+        $this->assertFalse($user->canById($permission->id));
+    }
+
+    /**
+     * Test revoke permission by name.
+     *
+     * @return void
+     */
+    public function testRevokePermissionByName(): void
+    {
+        $user = self::$userExtendedMapper->fetchById(7);
+        $permission = self::$permissionMapper->fetchById(6);
+
+        $this->assertInstanceOf(UserExtended::class, $user);
+        $this->assertInstanceOf(Permission::class, $permission);
+
+        $this->assertFalse($user->canByName($permission->name));
+
+        self::$userExtendedMapper->grantPermissionByName($user, $permission->name);
+
+        $this->assertTrue($user->canByName($permission->name));
+
+        self::$userExtendedMapper->revokePermissionByName($user, $permission->name);
+
+        $this->assertFalse($user->canByName($permission->name));
+    }
+
+    /**
      * User id provider
      *
      * @return array

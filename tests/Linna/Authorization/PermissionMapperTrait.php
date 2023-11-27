@@ -165,7 +165,7 @@ trait PermissionMapperTrait
         $this->assertEquals($permissions[$key]->name, $permissionName);
     }
 
-/**
+    /**
      * Role id provider.
      *
      * @return array
