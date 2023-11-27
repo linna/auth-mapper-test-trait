@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Linna\Authorization;
 
+use Linna\Authentication\Password;
 use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 
@@ -40,106 +41,71 @@ trait UserExtendedMapperTrait
     }
 
     /**
-     * Permission id provider.
+     * User Permission provider.
      *
      * @return array
      */
     public static function userPermissionProvider(): array
     {
+        $user = new UserExtended(id:7, name: 'User_5');
+        $permission = new Permission(id: 6, name: 'disable user');
+
         return [
-            [self::$userExtendedMapper->fetchById(7), self::$permissionMapper->fetchById(6)],
-           // [2, 3],
-           // [3, 2],
-           // [4, 2],
-           // [5, 5],
-           // [6, 5],
-           // [7, 0],
-           // [8, 0],
-           // [9, 0]
+            [$user, $permission]
         ];
     }
 
     /**
      * Test grant permission.
      *
+     * @dataProvider userPermissionProvider
+     *
      * @return void
      */
-    public function testGrantPermission(/*UserExtended $user, Permission $permission*/): void
+    public function testGrantPermission(UserExtended $user, Permission $permission): void
     {
-        $user = self::$userExtendedMapper->fetchById(7);
-        $permission = self::$permissionMapper->fetchById(6);
-
-        $this->assertInstanceOf(UserExtended::class, $user);
-        $this->assertInstanceOf(Permission::class, $permission);
-
         self::$userExtendedMapper->grantPermission($user, $permission);
 
         $this->assertTrue($user->can($permission));
-
-        self::$userExtendedMapper->revokePermission($user, $permission);
-
-        $this->assertFalse($user->can($permission));
     }
 
     /**
      * Test grant permission by id.
      *
+     * @dataProvider userPermissionProvider
+     *
      * @return void
      */
-    public function testGrantPermissionById(): void
+    public function testGrantPermissionById(UserExtended $user, Permission $permission): void
     {
-        $user = self::$userExtendedMapper->fetchById(7);
-        $permission = self::$permissionMapper->fetchById(6);
-
-        $this->assertInstanceOf(UserExtended::class, $user);
-        $this->assertInstanceOf(Permission::class, $permission);
-
         self::$userExtendedMapper->grantPermissionById($user, $permission->id);
 
         $this->assertTrue($user->canById($permission->id));
-
-        self::$userExtendedMapper->revokePermissionById($user, $permission->id);
-
-        $this->assertFalse($user->canById($permission->id));
-
-        // test for exsisting permission
     }
 
     /**
      * Test grant permission by name.
      *
+     * @dataProvider userPermissionProvider
+     *
      * @return void
      */
-    public function testGrantPermissionByName(): void
+    public function testGrantPermissionByName(UserExtended $user, Permission $permission): void
     {
-        $user = self::$userExtendedMapper->fetchById(7);
-        $permission = self::$permissionMapper->fetchById(6);
-
-        $this->assertInstanceOf(UserExtended::class, $user);
-        $this->assertInstanceOf(Permission::class, $permission);
-
         self::$userExtendedMapper->grantPermissionByName($user, $permission->name);
 
         $this->assertTrue($user->canByName($permission->name));
-
-        self::$userExtendedMapper->revokePermissionByName($user, $permission->name);
-
-        $this->assertFalse($user->canByName($permission->name));
     }
 
     /**
-         * Test revoke permission.
-         *
-         * @return void
-         */
-    public function testRevokePermission(): void
+     * Test revoke permission.
+     *
+     * @dataProvider userPermissionProvider
+     *
+     * @return void
+     */
+    public function testRevokePermission(UserExtended $user, Permission $permission): void
     {
-        $user = self::$userExtendedMapper->fetchById(7);
-        $permission = self::$permissionMapper->fetchById(6);
-
-        $this->assertInstanceOf(UserExtended::class, $user);
-        $this->assertInstanceOf(Permission::class, $permission);
-
         $this->assertFalse($user->can($permission));
 
         self::$userExtendedMapper->grantPermission($user, $permission);
@@ -154,16 +120,12 @@ trait UserExtendedMapperTrait
     /**
      * Test revoke permission by id.
      *
+     * @dataProvider userPermissionProvider
+     *
      * @return void
      */
-    public function testRevokePermissionById(): void
+    public function testRevokePermissionById(UserExtended $user, Permission $permission): void
     {
-        $user = self::$userExtendedMapper->fetchById(7);
-        $permission = self::$permissionMapper->fetchById(6);
-
-        $this->assertInstanceOf(UserExtended::class, $user);
-        $this->assertInstanceOf(Permission::class, $permission);
-
         $this->assertFalse($user->canById($permission->id));
 
         self::$userExtendedMapper->grantPermissionById($user, $permission->id);
@@ -178,16 +140,12 @@ trait UserExtendedMapperTrait
     /**
      * Test revoke permission by name.
      *
+     * @dataProvider userPermissionProvider
+     *
      * @return void
      */
-    public function testRevokePermissionByName(): void
+    public function testRevokePermissionByName(UserExtended $user, Permission $permission): void
     {
-        $user = self::$userExtendedMapper->fetchById(7);
-        $permission = self::$permissionMapper->fetchById(6);
-
-        $this->assertInstanceOf(UserExtended::class, $user);
-        $this->assertInstanceOf(Permission::class, $permission);
-
         $this->assertFalse($user->canByName($permission->name));
 
         self::$userExtendedMapper->grantPermissionByName($user, $permission->name);
@@ -197,6 +155,177 @@ trait UserExtendedMapperTrait
         self::$userExtendedMapper->revokePermissionByName($user, $permission->name);
 
         $this->assertFalse($user->canByName($permission->name));
+    }
+
+    /**
+     * User Role provider.
+     *
+     * @return array
+     */
+    public static function userRoleProvider(): array
+    {
+        $user = new UserExtended(id:7, name: 'User_5');
+        $role = new Role(id: 1, name: 'Administrator');
+
+        return [
+            [$user, $role]
+        ];
+    }
+
+    /**
+     * Test add role.
+     *
+     * @dataProvider userRoleProvider
+     *
+     * @return void
+     */
+    public function testAddRole(UserExtended $user, Role $role): void
+    {
+        //$user = self::$enhancedUserMapper->fetchById(7);
+        //$role = self::$roleMapper->fetchById(1);
+
+        //$this->assertInstanceOf(EnhancedUser::class, $user);
+        //$this->assertInstanceOf(Role::class, $role);
+
+        $this->assertFalse($user->hasRole($role));
+
+        self::$userExtendedMapper->addRole($user, $role);
+
+        $this->assertTrue($user->hasRole($role));
+
+        self::$userExtendedMapper->removeRole($user, $role);
+
+        $this->assertFalse($user->hasRole($role));
+    }
+
+    /**
+     * Test add role by id.
+     *
+     * @dataProvider userRoleProvider
+     *
+     * @return void
+     */
+    public function testAddRoleById(UserExtended $user, Role $role): void
+    {
+        //$user = self::$enhancedUserMapper->fetchById(7);
+        //$role = self::$roleMapper->fetchById(1);
+
+        //$this->assertInstanceOf(EnhancedUser::class, $user);
+        //$this->assertInstanceOf(Role::class, $role);
+
+        $this->assertFalse($user->hasRoleById($role->id));
+
+        self::$userExtendedMapper->addRoleById($user, $role->id);
+
+        $this->assertTrue($user->hasRoleById($role->id));
+
+        self::$userExtendedMapper->removeRoleById($user, $role->id);
+
+        $this->assertFalse($user->hasRoleById($role->id));
+    }
+
+    /**
+     * Test add role by name.
+     *
+     * @dataProvider userRoleProvider
+     *
+     * @return void
+     */
+    public function testAddRoleByName(UserExtended $user, Role $role): void
+    {
+        //$user = self::$enhancedUserMapper->fetchById(7);
+        //$role = self::$roleMapper->fetchById(1);
+
+        //$this->assertInstanceOf(EnhancedUser::class, $user);
+        //$this->assertInstanceOf(Role::class, $role);
+
+        $this->assertFalse($user->hasRoleByName($role->name));
+
+        self::$userExtendedMapper->addRoleByName($user, $role->name);
+
+        $this->assertTrue($user->hasRoleByName($role->name));
+
+        self::$userExtendedMapper->removeRoleByName($user, $role->name);
+
+        $this->assertFalse($user->hasRoleByName($role->name));
+    }
+
+    /**
+     * Test remove role.
+     *
+     * @dataProvider userRoleProvider
+     *
+     * @return void
+     */
+    public function testRemoveRole(UserExtended $user, Role $role): void
+    {
+        //$user = self::$enhancedUserMapper->fetchById(7);
+        //$role = self::$roleMapper->fetchById(1);
+
+        //$this->assertInstanceOf(EnhancedUser::class, $user);
+        //$this->assertInstanceOf(Role::class, $role);
+
+        $this->assertFalse($user->hasRole($role));
+
+        self::$userExtendedMapper->addRole($user, $role);
+
+        $this->assertTrue($user->hasRole($role));
+
+        self::$userExtendedMapper->emoveRole($user, $role);
+
+        $this->assertFalse($user->hasRole($role));
+    }
+
+    /**
+     * Test remove role by id.
+     *
+     * @dataProvider userRoleProvider
+     *
+     * @return void
+     */
+    public function testRemoveRoleById(UserExtended $user, Role $role): void
+    {
+        //$user = self::$enhancedUserMapper->fetchById(7);
+        //$role = self::$roleMapper->fetchById(1);
+
+        //$this->assertInstanceOf(EnhancedUser::class, $user);
+        //$this->assertInstanceOf(Role::class, $role);
+
+        $this->assertFalse($user->hasRoleById($role->id));
+
+        self::$userExtendedMapper->addRoleById($user, $role->id);
+
+        $this->assertTrue($user->hasRoleById($role->id));
+
+        self::$userExtendedMapper->removeRoleById($user, $role->id);
+
+        $this->assertFalse($user->hasRoleById($role->id));
+    }
+
+    /**
+     * Test remove role by name.
+     *
+     * @dataProvider userRoleProvider
+     *
+     * @return void
+     */
+    public function testRemoveRoleByName(UserExtended $user, Role $role): void
+    {
+        //$user = self::$enhancedUserMapper->fetchById(7);
+        //$role = self::$roleMapper->fetchById(1);
+
+        //$this->assertInstanceOf(EnhancedUser::class, $user);
+        //$this->assertInstanceOf(Role::class, $role);
+
+        $this->assertFalse($user->hasRoleByName($role->name));
+
+        self::$userExtendedMapper->addRoleByName($user, $role->name);
+
+        $this->assertTrue($user->hasRoleByName($role->name));
+
+        self::$userExtendedMapper->removeRoleByName($user, $role->name);
+
+        $this->assertFalse($user->hasRoleByName($role->name));
     }
 
     /**
@@ -635,148 +764,6 @@ trait UserExtendedMapperTrait
 
         $this->assertFalse($user->canByName($permission->name));
     }
+*/
 
-    /**
-     * Test add role.
-     *
-     * @return void
-     */
-    /*public function testAddRole(): void
-    {
-        $user = self::$enhancedUserMapper->fetchById(7);
-        $role = self::$roleMapper->fetchById(1);
-
-        $this->assertInstanceOf(EnhancedUser::class, $user);
-        $this->assertInstanceOf(Role::class, $role);
-
-        $this->assertFalse($user->hasRole($role));
-
-        self::$enhancedUserMapper->addRole($user, $role);
-
-        $this->assertTrue($user->hasRole($role));
-
-        self::$enhancedUserMapper->removeRole($user, $role);
-
-        $this->assertFalse($user->hasRole($role));
-    }
-
-    /**
-     * Test add role by id.
-     *
-     * @return void
-     */
-    /*public function testAddRoleById(): void
-    {
-        $user = self::$enhancedUserMapper->fetchById(7);
-        $role = self::$roleMapper->fetchById(1);
-
-        $this->assertInstanceOf(EnhancedUser::class, $user);
-        $this->assertInstanceOf(Role::class, $role);
-
-        $this->assertFalse($user->hasRoleById($role->id));
-
-        self::$enhancedUserMapper->addRoleById($user, $role->id);
-
-        $this->assertTrue($user->hasRoleById($role->id));
-
-        self::$enhancedUserMapper->removeRoleById($user, $role->id);
-
-        $this->assertFalse($user->hasRoleById($role->id));
-    }
-
-    /**
-     * Test add role by name.
-     *
-     * @return void
-     */
-    /*public function testAddRoleByName(): void
-    {
-        $user = self::$enhancedUserMapper->fetchById(7);
-        $role = self::$roleMapper->fetchById(1);
-
-        $this->assertInstanceOf(EnhancedUser::class, $user);
-        $this->assertInstanceOf(Role::class, $role);
-
-        $this->assertFalse($user->hasRoleByName($role->name));
-
-        self::$enhancedUserMapper->addRoleByName($user, $role->name);
-
-        $this->assertTrue($user->hasRoleByName($role->name));
-
-        self::$enhancedUserMapper->removeRoleByName($user, $role->name);
-
-        $this->assertFalse($user->hasRoleByName($role->name));
-    }
-
-    /**
-     * Test remove role.
-     *
-     * @return void
-     */
-    /*public function testRemoveRole(): void
-    {
-        $user = self::$enhancedUserMapper->fetchById(7);
-        $role = self::$roleMapper->fetchById(1);
-
-        $this->assertInstanceOf(EnhancedUser::class, $user);
-        $this->assertInstanceOf(Role::class, $role);
-
-        $this->assertFalse($user->hasRole($role));
-
-        self::$enhancedUserMapper->addRole($user, $role);
-
-        $this->assertTrue($user->hasRole($role));
-
-        self::$enhancedUserMapper->removeRole($user, $role);
-
-        $this->assertFalse($user->hasRole($role));
-    }
-
-    /**
-     * Test remove role by id.
-     *
-     * @return void
-     */
-    /*public function testRemoveRoleById(): void
-    {
-        $user = self::$enhancedUserMapper->fetchById(7);
-        $role = self::$roleMapper->fetchById(1);
-
-        $this->assertInstanceOf(EnhancedUser::class, $user);
-        $this->assertInstanceOf(Role::class, $role);
-
-        $this->assertFalse($user->hasRoleById($role->id));
-
-        self::$enhancedUserMapper->addRoleById($user, $role->id);
-
-        $this->assertTrue($user->hasRoleById($role->id));
-
-        self::$enhancedUserMapper->removeRoleById($user, $role->id);
-
-        $this->assertFalse($user->hasRoleById($role->id));
-    }
-
-    /**
-     * Test remove role by name.
-     *
-     * @return void
-     */
-    /*public function testRemoveRoleByName(): void
-    {
-        $user = self::$enhancedUserMapper->fetchById(7);
-        $role = self::$roleMapper->fetchById(1);
-
-        $this->assertInstanceOf(EnhancedUser::class, $user);
-        $this->assertInstanceOf(Role::class, $role);
-
-        $this->assertFalse($user->hasRoleByName($role->name));
-
-        self::$enhancedUserMapper->addRoleByName($user, $role->name);
-
-        $this->assertTrue($user->hasRoleByName($role->name));
-
-        self::$enhancedUserMapper->removeRoleByName($user, $role->name);
-
-        $this->assertFalse($user->hasRoleByName($role->name));
-    }*/
 }
