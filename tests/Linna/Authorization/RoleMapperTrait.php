@@ -248,13 +248,14 @@ trait RoleMapperTrait
     {
         return [
             [1, 1],
-            //[2, 1],
-            //[3, 1],
-            //[4, 1],
-            //[5, 1],
-            //[6, 1],
-           // [7, 1],
-           // [8, 0]
+            [2, 1],
+            [3, 1],
+            [4, 1],
+            [5, 1],
+            [6, 1],
+            [7, 1],
+            [8, 0],
+            [9, 0]
         ];
     }
 
@@ -270,7 +271,7 @@ trait RoleMapperTrait
      */
     public function testFetchByUser(int $userId, int $result): void
     {
-        $this->assertCount($result, self::$roleMapper->fetchByUser(new User(passwordUtility: new Password(), id:$permissionId)));
+        $this->assertCount($result, self::$roleMapper->fetchByUser(new User(passwordUtility: new Password(), id: $userId)));
     }
 
     /**
@@ -297,14 +298,14 @@ trait RoleMapperTrait
     {
         return [
             ['root', 1],
-            //['User_0', 1],
-           // ['User_1', 1],
-           // ['User_2', 1],
-          //  ['User_3', 1],
-          //  ['User_4', 1],
-          //  ['User_5', 1],
-          //  ['unknown user 1', 0],
-          //  ['unknown user 2', 0]
+            ['User_0', 1],
+            ['User_1', 1],
+            ['User_2', 1],
+            ['User_3', 1],
+            ['User_4', 1],
+            ['User_5', 1],
+            ['unknown user 1', 0],
+            ['unknown user 2', 0]
         ];
     }
 

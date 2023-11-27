@@ -165,6 +165,83 @@ trait PermissionMapperTrait
         $this->assertEquals($permissions[$key]->name, $permissionName);
     }
 
+/**
+     * Role id provider.
+     *
+     * @return array
+     */
+    public static function roleIdProvider(): array
+    {
+        return [
+            [1, 6],
+            [2, 4],
+            [3, 1],
+            [4, 0],
+            [5, 0]
+        ];
+    }
+
+    /**
+     * Test fetch by role.
+     *
+     * @dataProvider roleIdProvider
+     *
+     * @param int $roleId
+     * @param int $result
+     *
+     * @return void
+     */
+    public function testFetchByRole(int $roleId, int $result): void
+    {
+        $this->assertCount($result, self::$permissionMapper->fetchByRole(new Role(id: $roleId)));
+    }
+
+    /**
+     * Test fetch by role id.
+     *
+     * @dataProvider roleIdProvider
+     *
+     * @param int $roleId
+     * @param int $result
+     *
+     * @return void
+     */
+    public function testFetchByRoleId(int $roleId, int $result): void
+    {
+        $this->assertCount($result, self::$permissionMapper->fetchByRoleId($roleId));
+    }
+
+    /**
+     * Role name provider.
+     *
+     * @return array
+     */
+    public static function roleNameProvider(): array
+    {
+        return [
+            ['Administrator', 6],
+            ['Power Users', 4],
+            ['Users', 1],
+            ['unknown role 1', 0],
+            ['unknown role 2', 0]
+        ];
+    }
+
+    /**
+     * Test fetch by role name.
+     *
+     * @dataProvider roleNameProvider
+     *
+     * @param string $roleName
+     * @param int    $result
+     *
+     * @return void
+     */
+    public function testFetchByRoleName(string $roleName, int $result): void
+    {
+        $this->assertCount($result, self::$permissionMapper->fetchByRoleName($roleName));
+    }
+
     /**
      * Test concrete create.
      *
