@@ -127,13 +127,7 @@ trait RoleExtendedMapperTrait
 
         $this->assertTrue($role->canById($permission->id));
 
-        //var_dump($role);
-
         self::$roleExtendedMapper->revokePermissionById($role, $permission->id);
-
-        \var_dump($permission->id);
-        \var_dump($role->canById($permission->id));
-        \var_dump($role);
 
         $this->assertFalse($role->canById($permission->id));
     }
