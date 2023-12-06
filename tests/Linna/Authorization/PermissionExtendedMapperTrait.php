@@ -38,7 +38,7 @@ trait PermissionExtendedMapperTrait
      */
     public function testNewInstance(): void
     {
-        $this->assertInstanceOf(PermissionMapper::class, self::$permissionExtendedMapper);
+        $this->assertInstanceOf(PermissionExtendedMapper::class, self::$permissionExtendedMapper);
     }
 
     /**

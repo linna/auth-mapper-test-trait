@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Linna\Authorization;
 
-use Linna\DataMapper\NullDomainObject;
 use Linna\Storage\ExtendedPDO;
 
 /**
@@ -39,180 +38,234 @@ trait RoleExtendedMapperTrait
         $this->assertInstanceOf(RoleExtendedMapper::class, self::$roleExtendedMapper);
     }
 
+
     /**
-     * Role id provider.
+     * Role Permission provider.
      *
      * @return array
      */
-    /*public function roleIdProvider(): array
+    public static function rolePermissionProvider(): array
     {
+        $role = new RoleExtended(id: 2, name: 'Power Users');
+        $permission = new Permission(id: 3, name: 'delete user');
+
         return [
-            [1, 1],
-            [2, 2],
-            [3, 4],
-            [4, 0]
+            [$role, $permission]
         ];
     }
 
     /**
-     * Test fetch by role.
+     * Test grant permission.
      *
-     * @dataProvider roleIdProvider
-     *
-     * @param int $roleId
-     * @param int $result
+     * @dataProvider rolePermissionProvider
      *
      * @return void
      */
-    /*public function testFetchByRole(int $roleId, int $result): void
+    public function testGrantPermission(RoleExtended $role, Permission $permission): void
     {
-        $role = self::$roleMapper->fetchById($roleId);
+        self::$roleExtendedMapper->grantPermission($role, $permission);
 
-        if ($role instanceof Role) {
-            $this->assertCount($result, self::$roleToUserMapper->fetchByRole($role));
-        }
-
-        if ($role instanceof NullDomainObject) {
-            $this->assertSame($roleId, 4);
-            $this->assertSame($result, 0);
-        }
+        $this->assertTrue($role->can($permission));
     }
 
     /**
-     * Test fetch by role id.
+     * Test grant permission by id.
      *
-     * @dataProvider roleIdProvider
-     *
-     * @param int $roleId
-     * @param int $result
+     * @dataProvider rolePermissionProvider
      *
      * @return void
      */
-    /*public function testFetchByRoleId(int $roleId, int $result): void
+    public function testGrantPermissionById(RoleExtended $role, Permission $permission): void
     {
-        $this->assertCount($result, self::$roleToUserMapper->fetchByRoleId($roleId));
+        self::$roleExtendedMapper->grantPermissionById($role, $permission->id);
+
+        $this->assertTrue($role->canById($permission->id));
     }
 
     /**
-     * Role name provider.
+     * Test grant permission by name.
+     *
+     * @dataProvider rolePermissionProvider
+     *
+     * @return void
+     */
+    public function testGrantPermissionByName(RoleExtended $role, Permission $permission): void
+    {
+        self::$roleExtendedMapper->grantPermissionByName($role, $permission->name);
+
+        $this->assertTrue($role->canByName($permission->name));
+    }
+
+    /**
+     * Test revoke permission.
+     *
+     * @dataProvider rolePermissionProvider
+     *
+     * @return void
+     */
+    public function testRevokePermission(RoleExtended $role, Permission $permission): void
+    {
+        self::$roleExtendedMapper->grantPermission($role, $permission);
+
+        $this->assertTrue($role->can($permission));
+
+        self::$roleExtendedMapper->revokePermission($role, $permission);
+
+        $this->assertFalse($role->can($permission));
+    }
+
+    /**
+     * Test revoke permission by id.
+     *
+     * @dataProvider rolePermissionProvider
+     *
+     * @return void
+     */
+    public function testRevokePermissionById(RoleExtended $role, Permission $permission): void
+    {
+        self::$roleExtendedMapper->grantPermissionById($role, $permission->id);
+
+        $this->assertTrue($role->canById($permission->id));
+
+        //var_dump($role);
+
+        self::$roleExtendedMapper->revokePermissionById($role, $permission->id);
+
+        var_dump($permission->id);
+        var_dump($role->canById($permission->id));
+        var_dump($role);
+
+        $this->assertFalse($role->canById($permission->id));
+    }
+
+    /**
+     * Test revoke permission by name.
+     *
+     * @dataProvider rolePermissionProvider
+     *
+     * @return void
+     */
+    public function testRevokePermissionByName(RoleExtended $role, Permission $permission): void
+    {
+        self::$roleExtendedMapper->grantPermissionByName($role, $permission->name);
+
+        $this->assertTrue($role->canByName($permission->name));
+
+        self::$roleExtendedMapper->revokePermissionByName($role, $permission->name);
+
+        $this->assertFalse($role->canByName($permission->name));
+    }
+
+    /**
+     * Role User provider.
      *
      * @return array
      */
-    /*public function roleNameProvider(): array
+    public static function roleUserProvider(): array
     {
+        $role = new RoleExtended(id: 2, name: 'Power Users');
+        $user = new UserExtended(id: 7, name: 'User_5');
+
         return [
-            ['Administrator', 1],
-            ['Power Users', 2],
-            ['Users', 4],
-            ['Other', 0]
+            [$role, $user]
         ];
     }
 
     /**
-     * Test fetch by role name.
+     * Test add user.
      *
-     * @dataProvider roleNameProvider
-     *
-     * @param string $roleName
-     * @param int    $result
+     * @dataProvider roleUserProvider
      *
      * @return void
      */
-    /*public function testFetchByRoleName(string $roleName, int $result): void
+    public function testAddUser(RoleExtended $role, User $user): void
     {
-        $this->assertCount($result, self::$roleToUserMapper->fetchByRoleName($roleName));
+        self::$roleExtendedMapper->addUser($role, $user);
+
+        $this->assertTrue($role->hasUser($user));
     }
 
     /**
-     * User id provider.
+     * Test add user by id.
      *
-     * @return array
-     */
-    /*public function userIdProvider(): array
-    {
-        //all users have only a group
-        return [
-            [1, 1],
-            [2, 1],
-            [3, 1],
-            [4, 1],
-            [5, 1],
-            [6, 1],
-            [7, 1],
-            [8, 0]
-        ];
-    }
-
-    /**
-     * Test fetch by user.
-     *
-     * @dataProvider userIdProvider
-     *
-     * @param int $userId
-     * @param int $result
+     * @dataProvider roleUserProvider
      *
      * @return void
      */
-    /*public function testFetchByUser(int $userId, int $result): void
+    public function testAddUserById(RoleExtended $role, User $user): void
     {
-        $user = self::$enhancedUserMapper->fetchById($userId);
+        self::$roleExtendedMapper->addUserById($role, $user->id);
 
-        if ($user instanceof EnhancedUser) {
-            $this->assertCount($result, self::$roleToUserMapper->fetchByUser($user));
-        }
-
-        if ($user instanceof NullDomainObject) {
-            $this->assertSame($userId, 8);
-            $this->assertSame($result, 0);
-        }
+        $this->assertTrue($role->hasUserById($user->id));
     }
 
     /**
-     * Test fetch by user id.
+     * Test add user by name.
      *
-     * @dataProvider userIdProvider
-     *
-     * @param int $userId
-     * @param int $result
+     * @dataProvider roleUserProvider
      *
      * @return void
      */
-    /*public function testFetchByUserId(int $userId, int $result): void
+    public function testAddUserByName(RoleExtended $role, User $user): void
     {
-        $this->assertCount($result, self::$roleToUserMapper->fetchByUserId($userId));
+        self::$roleExtendedMapper->addUserByName($role, $user->name);
+
+        $this->assertTrue($role->hasUserByName($user->name));
     }
 
-    /**
-     * User name provider.
-     *
-     * @return array
-     */
-    /*public function userNameProvider(): array
-    {
-        return [
-            ['root', 1],
-            ['User_0', 1],
-            ['User_1', 1],
-            ['User_2', 1],
-            ['User_3', 1],
-            ['User_4', 1],
-            ['User_5', 1],
-            ['other_user', 0]
-        ];
-    }
+
 
     /**
-     * Test fetch by user name.
+     * Test remove user.
      *
-     * @dataProvider userNameProvider
-     *
-     * @param string $userName
-     * @param int    $result
+     * @dataProvider roleUserProvider
      *
      * @return void
      */
-    /*public function testFetchByUserName(string $userName, int $result): void
+    public function testRemoveUser(RoleExtended $role, User $user): void
     {
-        $this->assertCount($result, self::$roleToUserMapper->fetchByUserName($userName));
-    }*/
+        self::$roleExtendedMapper->addUser($role, $user);
+
+        $this->assertTrue($role->hasUser($user));
+
+        self::$roleExtendedMapper->removeUser($role, $user);
+
+        $this->assertFalse($role->hasUser($user));
+    }
+
+    /**
+     * Test remove user by id.
+     *
+     * @dataProvider roleUserProvider
+     *
+     * @return void
+     */
+    public function testRemoveUserById(RoleExtended $role, User $user): void
+    {
+        self::$roleExtendedMapper->addUserById($role, $user->id);
+
+        $this->assertTrue($role->hasUserById($user->id));
+
+        self::$roleExtendedMapper->removeUserById($role, $user->id);
+
+        $this->assertFalse($role->hasUserById($user->id));
+    }
+
+    /**
+     * Test remove user by name.
+     *
+     * @dataProvider roleUserProvider
+     *
+     * @return void
+     */
+    public function testRemoveUserByName(RoleExtended $role, User $user): void
+    {
+        self::$roleExtendedMapper->addUserByName($role, $user->name);
+
+        $this->assertTrue($role->hasUserByName($user->name));
+
+        self::$roleExtendedMapper->removeUserByName($role, $user->name);
+
+        $this->assertFalse($role->hasUserByName($user->name));
+    }
 }

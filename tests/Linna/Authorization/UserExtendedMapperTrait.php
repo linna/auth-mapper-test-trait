@@ -106,8 +106,6 @@ trait UserExtendedMapperTrait
      */
     public function testRevokePermission(UserExtended $user, Permission $permission): void
     {
-        //$this->assertFalse($user->can($permission));
-
         self::$userExtendedMapper->grantPermission($user, $permission);
 
         $this->assertTrue($user->can($permission));
@@ -126,8 +124,6 @@ trait UserExtendedMapperTrait
      */
     public function testRevokePermissionById(UserExtended $user, Permission $permission): void
     {
-        //$this->assertFalse($user->canById($permission->id));
-
         self::$userExtendedMapper->grantPermissionById($user, $permission->id);
 
         $this->assertTrue($user->canById($permission->id));
@@ -146,8 +142,6 @@ trait UserExtendedMapperTrait
      */
     public function testRevokePermissionByName(UserExtended $user, Permission $permission): void
     {
-        //$this->assertFalse($user->canByName($permission->name));
-
         self::$userExtendedMapper->grantPermissionByName($user, $permission->name);
 
         $this->assertTrue($user->canByName($permission->name));
@@ -209,9 +203,9 @@ trait UserExtendedMapperTrait
      */
     public function testAddRoleByName(UserExtended $user, Role $role): void
     {
-        $this->assertFalse($user->hasRoleByName($role->name));
-
         self::$userExtendedMapper->addRoleByName($user, $role->name);
+
+        $this->assertTrue($user->hasRoleByName($role->name));
     }
 
     /**
